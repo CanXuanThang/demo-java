@@ -17,12 +17,13 @@ import java.util.List;
 public class OrderController {
     private final IOrderService orderService;
 
-    @PostMapping("/order/{userId}")
+    @PostMapping("/order")
     public ResponseEntity<ApiResponse> createOrder(@RequestParam Long userId){
         try {
             Order order = orderService.placeOrder(userId);
+            OrderDTO orderDTO = orderService.convertToDTO(order);
 
-            return ResponseEntity.ok(new ApiResponse("Success", order));
+            return ResponseEntity.ok(new ApiResponse("Success", orderDTO));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse("Error", e.getMessage()));
         }

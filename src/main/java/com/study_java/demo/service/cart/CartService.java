@@ -2,6 +2,7 @@ package com.study_java.demo.service.cart;
 
 import com.study_java.demo.exceptions.ResourceNotFoundException;
 import com.study_java.demo.models.Cart;
+import com.study_java.demo.models.User;
 import com.study_java.demo.repository.CartItemRepository;
 import com.study_java.demo.repository.CartRepository;
 import jakarta.transaction.Transactional;
@@ -9,12 +10,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 @RequiredArgsConstructor
 public class CartService implements ICartService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
+    private final AtomicLong cartIdGenerator = new AtomicLong(0);
 
     @Override
     public Cart getCart(Long id) {
@@ -30,7 +34,7 @@ public class CartService implements ICartService {
         Cart cart = getCart(id);
         cartItemRepository.deleteAllByCartId(id);
         cart.getItems().clear();
-        cartItemRepository.deleteById(id);
+        cartRepository.deleteById(id);
     }
 
     @Override
@@ -40,10 +44,13 @@ public class CartService implements ICartService {
     }
 
     @Override
-    public Long initializeCart() {
-        Cart newCart = new Cart();
-
-        return cartRepository.save(newCart).getId();
+    public Cart initializeCart(User user) {
+        return Optional.ofNullable(getCartByUserId(user.getId()))
+                .orElseGet(() -> {
+                    Cart cart = new Cart();
+                    cart.setUser(user);
+                    return cartRepository.save(cart);
+                });
     }
 
     @Override

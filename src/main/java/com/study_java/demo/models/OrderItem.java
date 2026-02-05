@@ -1,5 +1,6 @@
 package com.study_java.demo.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.study_java.demo.emuns.OrderStatus;
 import jakarta.persistence.*;
 import lombok.Getter;

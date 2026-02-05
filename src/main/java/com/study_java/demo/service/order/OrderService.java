@@ -84,7 +84,8 @@ public class OrderService  implements IOrderService {
         return orders.stream().map(this::convertToDTO).toList();
     }
 
-    private OrderDTO convertToDTO(Order order) {
+    @Override
+    public OrderDTO convertToDTO(Order order) {
         return modelMapper.map(order, OrderDTO.class);
     }
 }
