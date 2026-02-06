@@ -1,5 +1,6 @@
 package com.study_java.demo.controller;
 
+import com.study_java.demo.dto.CartDTO;
 import com.study_java.demo.exceptions.ResourceNotFoundException;
 import com.study_java.demo.models.Cart;
 import com.study_java.demo.response.ApiResponse;
@@ -23,7 +24,8 @@ public class CartController {
     public ResponseEntity<ApiResponse> getCart(@PathVariable Long cartId){
         try {
             Cart cart = cartService.getCart(cartId);
-            return ResponseEntity.ok(new ApiResponse("Success", cart));
+            CartDTO cartDTO = cartService.convertCartToDTO(cart);
+            return ResponseEntity.ok(new ApiResponse("Success", cartDTO));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body( new ApiResponse(e.getMessage(), null));
         }

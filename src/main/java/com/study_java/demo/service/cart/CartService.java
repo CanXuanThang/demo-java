@@ -1,5 +1,6 @@
 package com.study_java.demo.service.cart;
 
+import com.study_java.demo.dto.CartDTO;
 import com.study_java.demo.exceptions.ResourceNotFoundException;
 import com.study_java.demo.models.Cart;
 import com.study_java.demo.models.User;
@@ -7,6 +8,7 @@ import com.study_java.demo.repository.CartItemRepository;
 import com.study_java.demo.repository.CartRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -19,6 +21,7 @@ public class CartService implements ICartService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final AtomicLong cartIdGenerator = new AtomicLong(0);
+    private final ModelMapper modelMapper;
 
     @Override
     public Cart getCart(Long id) {
@@ -56,5 +59,10 @@ public class CartService implements ICartService {
     @Override
     public Cart getCartByUserId(Long userId) {
         return cartRepository.findByUserId(userId);
+    }
+
+    @Override
+    public CartDTO convertCartToDTO(Cart cart) {
+        return modelMapper.map(cart, CartDTO.class);
     }
 }

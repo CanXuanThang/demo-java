@@ -2,6 +2,7 @@ package com.study_java.demo.service.product;
 
 import com.study_java.demo.dto.ImageDTO;
 import com.study_java.demo.dto.ProductDTO;
+import com.study_java.demo.exceptions.AlreadyExistsException;
 import com.study_java.demo.exceptions.ProductNotFoundException;
 import com.study_java.demo.models.Category;
 import com.study_java.demo.models.Image;
@@ -28,6 +29,10 @@ public class ProductService implements IProductService{
 
     @Override
     public Product addProduct(AddProductRequest product) {
+        if(productExists(product.getName(), product.getBrand())) {
+            throw new AlreadyExistsException(product.getBrand() + " " + product.getName() + " already exists!");
+        }
+
         Category category = Optional.ofNullable(categoryRepository.findByName(product.getCategory().getName()))
                 .orElseGet(() -> {
                         Category newCategory = new Category(product.getCategory().getName());
@@ -35,6 +40,10 @@ public class ProductService implements IProductService{
         });
         product.setCategory(category);
         return productRepository.save(createProduct(product, category));
+    }
+
+    private boolean productExists(String name, String brand) {
+        return productRepository.existsByNameAndBrand(name, brand);
     }
 
     private Product createProduct(AddProductRequest product, Category category) {

@@ -1,5 +1,6 @@
 package com.study_java.demo.service.cart;
 
+import com.study_java.demo.dto.CartDTO;
 import com.study_java.demo.models.Cart;
 import com.study_java.demo.models.User;
 
@@ -11,4 +12,6 @@ public interface ICartService {
     BigDecimal getTotalPrice(Long id);
     Cart initializeCart(User user);
     Cart getCartByUserId(Long userId);
+
+    CartDTO convertCartToDTO(Cart cart);
 }

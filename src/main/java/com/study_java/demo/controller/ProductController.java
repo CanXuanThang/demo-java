@@ -1,6 +1,7 @@
 package com.study_java.demo.controller;
 
 import com.study_java.demo.dto.ProductDTO;
+import com.study_java.demo.exceptions.AlreadyExistsException;
 import com.study_java.demo.exceptions.ResourceNotFoundException;
 import com.study_java.demo.models.Product;
 import com.study_java.demo.request.AddProductRequest;
@@ -45,7 +46,7 @@ public class ProductController {
         try {
             Product theProduct = productService.addProduct(product);
             return ResponseEntity.ok(new ApiResponse("success", theProduct));
-        } catch (Exception e) {
+        } catch (AlreadyExistsException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }
     }
