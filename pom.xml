@@ -28,6 +28,9 @@
 	</scm>
 	<properties>
 		<java.version>17</java.version>
+		<jjw-api.version>0.11.5</jjw-api.version>
+		<jjw-impl.version>0.11.5</jjw-impl.version>
+		<jjw-jackson.version>0.11.5</jjw-jackson.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -47,6 +50,26 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
+
+
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>${jjw-api.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>${jjw-impl.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>${jjw-jackson.version}</version>
+			<scope>runtime</scope>
+		</dependency>
 
         <dependency>
             <groupId>org.modelmapper</groupId>
