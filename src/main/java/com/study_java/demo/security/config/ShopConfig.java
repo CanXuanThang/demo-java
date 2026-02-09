@@ -4,13 +4,13 @@ import com.study_java.demo.security.jwt.AuthTokenFilter;
 import com.study_java.demo.security.jwt.JwtAuthEntryPoint;
 import com.study_java.demo.security.user.ShopUserDetailService;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.AbstractCondition;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -25,10 +25,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @EnableWebSecurity
 @Configuration
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class ShopConfig {
     private final ShopUserDetailService userDetailService;
     private final JwtAuthEntryPoint jwtAuthEntryPoint;
-    private static final List<String> SECURED_URLS = List.of("");
+    private final AuthTokenFilter authTokenFilter;
+    private static final List<String> SECURED_URLS =
+            List.of("/api/v1/carts/**", "/api/v1/cartItems/**");
 
     @Bean
     public ModelMapper modelMapper() {
@@ -40,14 +43,10 @@ public class ShopConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public AuthTokenFilter authTokenFilter() {
-        return new AuthTokenFilter();
-    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager()
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
@@ -59,14 +58,16 @@ public class ShopConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http.csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth.requestMatchers(SECURED_URLS.toArray(String[]::new)).authenticated())
-                .anyRequest().permitAll();
+                .authorizeHttpRequests(auth ->auth.requestMatchers(SECURED_URLS.toArray(String[]::new)).authenticated()
+                        .anyRequest().permitAll());
         http.authenticationProvider(daoAuthenticationProvider());
-        http.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
+
     }
 }
